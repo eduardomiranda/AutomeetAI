@@ -30,26 +30,44 @@ st.title('🤖 AutomeetAI')
 st.write('Automação de atas de reunião com tecnologia de IA com Python.')
 
 
-# Adiciona uma linha horizontal para separar seções no layout da aplicação.
-st.divider()
 
-# Divide a página em duas colunas para entrada de API keys.
-col11, col12 = st.columns(2)
+# Verifica se as chaves de API para AssemblyAI e OpenAI estão disponíveis nos segredos (st.secrets).
+if 'assemblyai' in st.secrets and 'api_key' in st.secrets['assemblyai'] and \
+   'openai'     in st.secrets and 'api_key' in st.secrets['openai'] :
 
-# Coluna para entrada da API key do AssemblyAI.
-with col11:
-    aai_api_key = st.text_input("AssemblyAI   •   API key", "")
+	# Recupera a chave de API para AssemblyAI dos segredos armazenados e a atribui à variável `aai_api_key`.
+	aai_api_key = st.secrets['assemblyai']['api_key']
 
-# Coluna para entrada da API key do OpenAI.
-with col12:
-	openai_api_key = st.text_input("OpenAI   •   API key", "")
+	# Recupera a chave de API para OpenAI dos segredos armazenados e a atribui à variável `openai_api_key`.
+	openai_api_key = st.secrets['openai']['api_key']
+
+
+else:
+
+	# Caso as chaves não estejam disponíveis, cria uma interface de usuário para entrada manual das chaves.
+
+	# Adiciona uma linha horizontal para separar seções no layout da aplicação.
+	st.divider()
+
+	# Divide a página em duas colunas para entrada de API keys.
+	col11, col12 = st.columns(2)
+
+	with col11:
+		# O método `text_input` é usado para criar uma caixa de texto onde o usuário pode inserir a chave de API.
+		aai_api_key = st.text_input("AssemblyAI   •   API key")
+
+	with col12:
+		# Outro método `text_input` semelhante ao anterior, mas desta vez para a chave de API do OpenAI.
+		openai_api_key = st.text_input("OpenAI   •   API key")
+
+
 
 
 # Outra linha divisória para organização visual.
 st.divider()
 
 # Área de texto para o prompt do sistema: o comportamento e papel do "assistente".
-prompt_system = st.text_area("comportamento e papel do \"assistente\":", "Você é um ótimo gerente de projetos com grandes capacidades de criação de atas de reunião.")
+prompt_system = st.text_area("Forneça instruções gerais ou estabeleça o tom para o \"assistente\" de IA:", "Você é um ótimo gerente de projetos com grandes capacidades de criação de atas de reunião.")
 
 # Área de texto para o prompt do usuário: o que o usuário deseja que o assistente faça.
 prompt_text = st.text_area("O que o usuário deseja que o assistente faça?", """Em uma redação de nível especializado, resuma as notas da reunião em um único parágrafo.
@@ -65,11 +83,11 @@ col21, col22 = st.columns(2)
 
 # Entrada numérica para o número de falantes estimados no áudio.
 with col21:
-    speakers_expected = st.number_input("Total de pessoas falantes:", 1, 15)
+	speakers_expected = st.number_input("Total de pessoas falantes:", 1, 15)
 
 # Seleção do idioma falado, usando a lista de códigos de idiomas importados.
 with col22:
-    language = st.selectbox("Selecione o idioma falado:", tuple(language_codes.keys()))
+	language = st.selectbox("Selecione o idioma falado:", tuple(language_codes.keys()))
 
 # Componente de upload de arquivo para que o usuário possa enviar um arquivo MP4.
 uploaded_file = st.file_uploader("Selecione o seu arquivo", accept_multiple_files=False, type=['mp4'])
@@ -81,85 +99,85 @@ st.divider()
 # Se um arquivo foi carregado, executa o processamento.
 if uploaded_file:
 
-    with st.spinner('Convertendo de mp4 para mp3...'):
+	with st.spinner('Convertendo de mp4 para mp3...'):
 
-        # Obtém o nome do arquivo carregado
-        mp4_filename = uploaded_file.name
+		# Obtém o nome do arquivo carregado
+		mp4_filename = uploaded_file.name
 
-        # Gera um nome único para o arquivo MP3 usando uuid (pseudônimo universalmente único).
-        mp3_filename = '{nome_arquivo}.mp3'.format(nome_arquivo=uuid.uuid4().hex)
+		# Gera um nome único para o arquivo MP3 usando uuid (pseudônimo universalmente único).
+		mp3_filename = '{nome_arquivo}.mp3'.format(nome_arquivo=uuid.uuid4().hex)
 
-        # Abre o arquivo temporariamente para leitura e escrita binária.
-        tempfile = open(mp4_filename, 'wb')
-        tempfile.write(uploaded_file.read())
+		# Abre o arquivo temporariamente para leitura e escrita binária.
+		tempfile = open(mp4_filename, 'wb')
+		tempfile.write(uploaded_file.read())
 
-        # Converte o arquivo MP4 para MP3.
-        mp4_to_mp3(mp4_filename, mp3_filename)
+		# Converte o arquivo MP4 para MP3.
+		mp4_to_mp3(mp4_filename, mp3_filename)
 
-    # Indica sucesso da conversão do MP4 para MP3.
-    st.success("Conversão de MP4 para MP3 realizada!")
-
-
-
-    with st.spinner('Convertendo de mp3 para texto...'):
-
-        # Configura a chave da API para o AssemblyAI.
-        aai.settings.api_key = aai_api_key
-
-        # Converte o áudio MP3 para texto.
-        transcript = mp3_to_text(
-            aai, 
-            filename=mp3_filename,
-            s_labels=True,  # Ativa os rótulos para falantes.
-            s_expected=speakers_expected,
-            l_code=language_codes[language]
-        )
-
-        # Indica que o áudio foi transcrito com sucesso.
-        st.success("Transcrição de áudio para texto realizada!")
+	# Indica sucesso da conversão do MP4 para MP3.
+	st.success("Conversão de MP4 para MP3 realizada!")
 
 
-        # Inicializa variáveis para armazenar o texto transcrito e anotado.
-        texto_transcrito = ''
-        texto_anotado = []
 
-        # Se a transcrição foi bem-sucedida, exibe as falas dos falantes.
-        if transcript:
-            # Itera sobre as falas transcritas e imprime cada fala com o número do falante.
-            for utterance in transcript.utterances:
-                # Exibe o número do falante e o texto correspondente.
-                texto_transcrito += f"Speaker {utterance.speaker}: {utterance.text}"
-                texto_transcrito += '\n'
+	with st.spinner('Convertendo de mp3 para texto...'):
 
-                # Adiciona o texto da fala junto com a identificação do falante.
-                texto_anotado.append((utterance.text, f"Speaker {utterance.speaker}"))
+		# Configura a chave da API para o AssemblyAI.
+		aai.settings.api_key = aai_api_key
 
+		# Converte o áudio MP3 para texto.
+		transcript = mp3_to_text(
+			aai, 
+			filename=mp3_filename,
+			s_labels=True,  # Ativa os rótulos para falantes.
+			s_expected=speakers_expected,
+			l_code=language_codes[language]
+		)
 
-    with st.spinner('Gerando ata de reunião...'):
-
-        # Inicializa o cliente OpenAI com sua chave de API.
-        client = OpenAI(api_key=openai_api_key)
-
-        # Inclui a transcrição do áudio no prompt de texto.
-        prompt_text += '\n===========\n'
-        prompt_text += texto_transcrito
-
-        # Gera uma resposta com base nos prompts e na transcrição.
-        texto_retorno = generate_response(client, prompt_system, prompt_text)
-
-        # Indica sucesso na geração da ata.
-        st.success("Ata gerada com sucesso!")
+		# Indica que o áudio foi transcrito com sucesso.
+		st.success("Transcrição de áudio para texto realizada!")
 
 
-    # Exibe a seção de transcrição original.
-    st.subheader('Transcrição original')
+		# Inicializa variáveis para armazenar o texto transcrito e anotado.
+		texto_transcrito = ''
+		texto_anotado = []
 
-    # Mostra o texto anotado com os falantes diferenciados.
-    annotated_text(texto_anotado)
+		# Se a transcrição foi bem-sucedida, exibe as falas dos falantes.
+		if transcript:
+			# Itera sobre as falas transcritas e imprime cada fala com o número do falante.
+			for utterance in transcript.utterances:
+				# Exibe o número do falante e o texto correspondente.
+				texto_transcrito += f"Speaker {utterance.speaker}: {utterance.text}"
+				texto_transcrito += '\n'
 
-    # Display da ata gerada na aplicação.
-    st.subheader('Ata gerada')
-    st.markdown(texto_retorno)
+				# Adiciona o texto da fala junto com a identificação do falante.
+				texto_anotado.append((utterance.text, f"Speaker {utterance.speaker}"))
 
-    # Remove o arquivo MP3 temporário criado.
-    deletar_arquivo_se_existir(mp3_filename)
+
+	with st.spinner('Gerando ata de reunião...'):
+
+		# Inicializa o cliente OpenAI com sua chave de API.
+		client = OpenAI(api_key=openai_api_key)
+
+		# Inclui a transcrição do áudio no prompt de texto.
+		prompt_text += '\n===========\n'
+		prompt_text += texto_transcrito
+
+		# Gera uma resposta com base nos prompts e na transcrição.
+		texto_retorno = generate_response(client, prompt_system, prompt_text)
+
+		# Indica sucesso na geração da ata.
+		st.success("Ata gerada com sucesso!")
+
+
+	# Exibe a seção de transcrição original.
+	st.subheader('Transcrição original')
+
+	# Mostra o texto anotado com os falantes diferenciados.
+	annotated_text(texto_anotado)
+
+	# Display da ata gerada na aplicação.
+	st.subheader('Ata gerada')
+	st.markdown(texto_retorno)
+
+	# Remove o arquivo MP3 temporário criado.
+	deletar_arquivo_se_existir(mp3_filename)
