@@ -53,3 +53,13 @@ Speaker B: Eu não sei, para falar alguma coisa, mas tem um jornalista que eu ch
 > Speaker A: Então, contato com as pessoas, contato físico...
 > Speaker B: Não tem, no entanto, músico. A música do meu show, Vivo Gordo, abaixo do regime, é de autoria dele e o maestro Edson Freire, quando ouviu, Mas é ótima a música dele. Vamos botar no show e ele orquestrou os temas musicais do Rafinha, que tocava piano como um concertista e um dia resolveu que não ia tocar mais. Fechou o piano, nunca mais se dedicou ao rádio e se transformou num... Como é que chama o cara que faz rádio? É... Radialista. Um disc jockey. E teve uma homenagem do... maior disc jockey do Rio de Janeiro, que eu não lembro o nome, o maior comunicador da rádio, que foi ao enterro do Rafinha, ele falou assim, este é o maior profissional da rádio que eu já conheci, porque aquilo era a vida do Rafinha. Aí eu chorava, porque ele foi profissional, porque ele não largava rádio, e é tudo com aquela coisa do autista, que não é seis horas, sete horas, não, seis e dois, sete e dezesseis, é tudo. Aliás, o filme, um retrato muito perfeito do Rafinha, tá no filme Rain Man, com o Dustin Hoffman.
 > Speaker A: Jô, o segundo volume da.
+
+
+
+\
+&nbsp;
+## Conversação com ChatGPT
+Para rodar esta aplicação de forma local execute o seguinte comando no terminal:
+```sh
+python3 chat_com_openai.py
+```
