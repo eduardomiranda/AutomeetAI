@@ -3,11 +3,8 @@
 # mas para este código, assumimos que OpenAI é importado corretamente.
 from openai import OpenAI
 
-# Inicialize o cliente OpenAI com sua chave de API.
-# Isso permite que você use vários modelos fornecidos pelo OpenAI.
-client = OpenAI(api_key='')  # Certifique-se de substituir por uma chave de API válida.
 
-def generate_response(system_prompt_text, user_prompt_text):
+def generate_response(openai_client, system_prompt_text, user_prompt_text):
     """
     Esta função envia uma solicitação para a API do OpenAI com um prompt dado e retorna a resposta do modelo.
 
@@ -19,9 +16,10 @@ def generate_response(system_prompt_text, user_prompt_text):
     """
 
     try:
+
         # Usando o endpoint de conclusão de chat do OpenAI para obter uma resposta do modelo
         # response é tipicamente um objeto que contém opções geradas pela IA
-        response = client.chat.completions.create(
+        response = openai_client.chat.completions.create(
             model="gpt-4o-2024-08-06",  # Especifica o modelo a ser usado
             messages=[
                 {"role": "system", "content": system_prompt_text},
@@ -49,12 +47,16 @@ def generate_response(system_prompt_text, user_prompt_text):
 # Verifica se o script está sendo executado como o programa principal
 if __name__ == "__main__":
 
+    # Inicialize o cliente OpenAI com sua chave de API.
+    # Isso permite que você use vários modelos fornecidos pelo OpenAI.
+    client = OpenAI(api_key='')  # Certifique-se de substituir por uma chave de API válida.
+
     # Defina os prompts para testar a função
     system_prompt_text = "Você é um assistente prestativo."
     user_prompt_text = "Explique a teoria da relatividade em termos simples."
 
     # Chame a função de geração de resposta e capture seu resultado
-    result = generate_response(system_prompt_text, user_prompt_text)
+    result = generate_response(openai_client, system_prompt_text, user_prompt_text)
 
     # Verifique se obtivemos uma resposta válida e imprima um resultado final
     if result:
