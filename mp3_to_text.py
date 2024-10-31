@@ -5,8 +5,6 @@
 
 import assemblyai as aai
 
-# Defina sua chave de API fornecida pelo AssemblyAI. Isso é essencial para autenticação.
-aai.settings.api_key = ""
 
 # Função para converter um arquivo de áudio MP3 em texto usando o serviço AssemblyAI.
 def mp3_to_text(aai, filename, s_labels, s_expected, l_code):
@@ -42,6 +40,10 @@ def mp3_to_text(aai, filename, s_labels, s_expected, l_code):
 
 # Verifica se este script Python está sendo executado diretamente, não importado.
 if __name__ == "__main__":
+
+    # Defina sua chave de API fornecida pelo AssemblyAI. Isso é essencial para autenticação.
+    aai.settings.api_key = ""
+
     # Especifique o caminho para o arquivo MP3 que deseja transcrever.
     mp3_local_filename = "d4fc6a25adeb464ca69a72072b7dff50.mp3"
 
