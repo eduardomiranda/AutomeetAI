@@ -1,5 +1,5 @@
 # AutomeetAI
-Criando uma ferramenta de automação de atas de reunião com tecnologia de IA com Python
+Criando uma ferramenta de automação de atas de reunião com tecnologia de IA com Python.
 
 ## Criando o **Python Virtual Environment**
 > ⚠️Necessário apenas um única vez.
@@ -19,7 +19,7 @@ Para rodar esta aplicação de forma local execute o seguinte comando no termina
 ```sh
 streamlit run AutomeetAI.py
 ```
-Isso abrirá um navegador web com a sua aplicação "🤖 AutomeetAI"
+Isso abrirá um navegador web com a sua aplicação "🤖 AutomeetAI".
 
 ---
 
@@ -28,7 +28,7 @@ Para rodar esta aplicação de forma local execute o seguinte comando no termina
 ```sh
 streamlit run hello_world_streamlit.py
 ```
-Isso abrirá um navegador web com a sua aplicação "Hello World App"
+Isso abrirá um navegador web com a sua aplicação "Hello World App".
 
 
 ## Conversão de MP4 para MP3
