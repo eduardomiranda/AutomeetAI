@@ -1,6 +1,8 @@
 # Importamos o módulo streamlit com o alias 'st'
 # Dessa forma, podemos usar 'st' para acessar as funcionalidades do Streamlit
 import streamlit as st
+from annotated_text import annotated_text
+
 import assemblyai as aai
 from openai import OpenAI
 import uuid
@@ -86,7 +88,10 @@ if uploaded_file:
 			l_code=language_codes[language]
 		)
 
+		st.success("Transcrição de áudio para texto realizada!")
+
 		texto_transcrito = ''
+		texto_anotado = []
 
 		# Se a transcrição foi bem-sucedida, exibe as falas dos falantes.
 		if transcript:
@@ -96,15 +101,14 @@ if uploaded_file:
 				texto_transcrito += f"Speaker {utterance.speaker}: {utterance.text}"
 				texto_transcrito += '\n'
 
-			st.success("Transcrição de áudio para texto realizada!")
+				texto_anotado.append((utterance.text, f"Speaker {utterance.speaker}"))
 
 
 
 	with st.spinner('Gerando ata de reunião'):
 		
 		# Inicialize o cliente OpenAI com sua chave de API.
-		# Isso permite que você use vários modelos fornecidos pelo OpenAI.
-		client = OpenAI(api_key=openai_api_key)  # Certifique-se de substituir por uma chave de API válida.
+		client = OpenAI(api_key=openai_api_key)
 
 		prompt_text += '\n===========\n'
 		prompt_text += texto_transcrito
@@ -114,10 +118,12 @@ if uploaded_file:
 		st.success("Ata gerada com sucesso!")
 
 
-		st.subheader('Transcrição original')
-		st.markdown(texto_transcrito)
-		st.subheader('Ata gerada')
-		st.markdown(texto_retorno)
+	st.subheader('Transcrição original')
+	annotated_text(texto_anotado)
+	
+	# st.markdown(texto_transcrito)
+	st.subheader('Ata gerada')
+	st.markdown(texto_retorno)
 
 
 	deletar_arquivo_se_existir(mp3_filename)
