@@ -37,7 +37,7 @@ Para rodar esta aplicação de forma local execute o seguinte comando no termina
 python3 mp4_to_mp3.py
 ```
 Isso gerará um arquivo com o nome similar a este: ```015d39afc48847e19fa06bd518129e02.mp3```.
-
+> ⚠️ Problemas de incompatibilidade foram encontrados com AssemblyAI executando com Python 3.14.
 
 ## Conversão de MP3 para Texto
 Para rodar esta aplicação de forma local execute o seguinte comando no terminal:
