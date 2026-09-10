@@ -13,7 +13,7 @@ from openai import OpenAI
 import uuid
 
 # Importamos funções personalizadas para converter arquivos e manusear dados.
-from mp4_to_mp3 import mp4_to_mp3
+from mp4_to_mp3 import mp4_to_mp3, audio_to_mp3
 from mp3_to_text import mp3_to_text
 from misc import deletar_arquivo_se_existir
 from chat_com_openai import generate_response
@@ -89,33 +89,51 @@ with col21:
 with col22:
 	language = st.selectbox("Selecione o idioma falado:", tuple(language_codes.keys()))
 
-# Componente de upload de arquivo para que o usuário possa enviar um arquivo MP4.
-uploaded_file = st.file_uploader("Selecione o seu arquivo", accept_multiple_files=False, type=['mp4'])
-
+# Componente de upload de arquivo para que o usuário possa enviar arquivos de áudio/vídeo.
+uploaded_file = st.file_uploader("Selecione o seu arquivo", accept_multiple_files=False)
 
 # Linha divisória abaixo do componente de upload.
 st.divider()
 
+# Validação de tipo de arquivo suportado
+if uploaded_file:
+	extensoes_suportadas = ['mp4', 'ogg', 'oga', 'opus', 'mp3', 'wav', 'flac', 'm4a']
+	extensao_arquivo = uploaded_file.name.split('.')[-1].lower()
+	
+	if extensao_arquivo not in extensoes_suportadas:
+		st.error(f"❌ Arquivo não suportado! Use um destes formatos: {', '.join(extensoes_suportadas)}")
+		uploaded_file = None
+	else:
+		st.success(f"✅ Arquivo {extensao_arquivo.upper()} detectado")
+
+
 # Se um arquivo foi carregado, executa o processamento.
 if uploaded_file:
 
-	with st.spinner('Convertendo de mp4 para mp3...'):
+	# Obtém o nome do arquivo carregado
+	uploaded_filename = uploaded_file.name
+	
+	# Detecta a extensão do arquivo
+	file_extension = uploaded_filename.split('.')[-1].lower()
 
-		# Obtém o nome do arquivo carregado
-		mp4_filename = uploaded_file.name
+	with st.spinner('Convertendo áudio para mp3...'):
 
 		# Gera um nome único para o arquivo MP3 usando uuid (pseudônimo universalmente único).
 		mp3_filename = '{nome_arquivo}.mp3'.format(nome_arquivo=uuid.uuid4().hex)
 
 		# Abre o arquivo temporariamente para leitura e escrita binária.
-		tempfile = open(mp4_filename, 'wb')
+		tempfile = open(uploaded_filename, 'wb')
 		tempfile.write(uploaded_file.read())
+		tempfile.close()
 
-		# Converte o arquivo MP4 para MP3.
-		mp4_to_mp3(mp4_filename, mp3_filename)
+		# Converte o arquivo para MP3 (suporta MP4, OGG e outros formatos)
+		audio_to_mp3(uploaded_filename, mp3_filename)
+		
+		# Remove o arquivo temporário
+		deletar_arquivo_se_existir(uploaded_filename)
 
-	# Indica sucesso da conversão do MP4 para MP3.
-	st.success("Conversão de MP4 para MP3 realizada!")
+	# Indica sucesso da conversão.
+	st.success("Conversão para MP3 realizada!")
 
 
 
